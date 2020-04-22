@@ -22,6 +22,6 @@ typedef struct fs_wrapper_dir
     #else
     DIR data;
     #endif
-} fs_wrapper_dir_t; //attention: DIR and DIR is different for different plarforms
+} fs_wrapper_dir_t; //DIR and DIR are different for different platforms
 
 #endif /*FS_WRAPPER_GLOBAL_H_*/
