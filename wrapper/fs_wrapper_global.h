@@ -11,11 +11,11 @@
 
 typedef enum
 {
-    DFRESULT_OK = 0,
-    DFRESULT_ERROR
-} DFRESULT;
+    FSWRESULT_OK = 0,
+    FSWRESULT_ERROR
+} fswresult_e;
 
-typedef struct wrapper_dir
+typedef struct fs_wrapper_dir
 {
     #ifdef LINUX_PLATFORM
     DIR *data;

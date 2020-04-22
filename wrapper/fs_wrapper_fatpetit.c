@@ -1,6 +1,6 @@
 #include "fs_wrapper_fatpetit.h"
 
-DFRESULT fs_wrapper_fatpetit_opendir(fs_wrapper_dir_t *dir, const char* dirpath)
+fswresult_e fs_wrapper_fatpetit_opendir(fs_wrapper_dir_t *dir, const char* dirpath)
 {
     DIR pf_dir;
     FRESULT res;
@@ -10,11 +10,11 @@ DFRESULT fs_wrapper_fatpetit_opendir(fs_wrapper_dir_t *dir, const char* dirpath)
     if(res == FR_OK)
     {
         dir->data = pf_dir;
-        return DFRESULT_OK;
+        return FSWRESULT_OK;
     }
     else
     {
         dir->data = NULL; //TODO: find NULL declaration for stm32
-        return DFRESULT_ERROR;
+        return FSWRESULT_ERROR;
     }
 }
