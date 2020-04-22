@@ -13,6 +13,7 @@ fswresult_e fs_wrapper_linux_opendir(fs_wrapper_dir_t *dir, const char *dirpath)
 
 fswresult_e fs_wrapper_linux_open(const char *fname)
 {
+    fclose(file);
     file = fopen(fname, "r"); // read only for compliance with fatpetit
     if(file == NULL)
         return FSWRESULT_ERROR;
