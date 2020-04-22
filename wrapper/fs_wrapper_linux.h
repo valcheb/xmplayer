@@ -3,5 +3,6 @@
 
 #include "fs_wrapper_global.h"
 
+DFRESULT fs_wrapper_linux_opendir(fs_wrapper_dir_t *dir, const char * dirpath);
 
 #endif /*FS_WRAPPER_LINUX_H_*/
