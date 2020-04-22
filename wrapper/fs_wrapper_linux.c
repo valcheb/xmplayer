@@ -19,3 +19,13 @@ fswresult_e fs_wrapper_linux_open(const char *fname)
     else
         return FSWRESULT_OK;
 }
+
+fswresult_e fs_wrapper_linux_read(void *readbuf, uint16_t size, uint16_t *bread) //TODO: debug this
+{
+    *bread = (uint16_t)fread(readbuf,1,size,file);
+
+    if(*bread != size)
+        return FSWRESULT_ERROR;
+    else
+        return FSWRESULT_OK;
+}
