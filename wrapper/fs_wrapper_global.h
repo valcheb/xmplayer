@@ -2,6 +2,7 @@
 #define FS_WRAPPER_GLOBAL_H_
 
 #define LINUX_PLATFORM // temporary define
+#define DIRITEM_NAME 13
 
 #ifdef LINUX_PLATFORM
 #include <dirent.h>
@@ -23,5 +24,10 @@ typedef struct fs_wrapper_dir
     DIR data;
     #endif
 } fs_wrapper_dir_t; //DIR and DIR are different for different platforms
+
+typedef struct fs_wrapper_diritem
+{
+    char name[DIRITEM_NAME];
+} fs_wrapper_diritem_t;
 
 #endif /*FS_WRAPPER_GLOBAL_H_*/
