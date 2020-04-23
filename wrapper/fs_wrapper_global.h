@@ -5,9 +5,9 @@
 #define DIRITEM_NAME 13
 
 #ifdef LINUX_PLATFORM
-#include <dirent.h>
+# include <dirent.h>
 #else
-#include "pff.h"
+# include "pff.h"
 #endif
 
 typedef enum
@@ -19,11 +19,11 @@ typedef enum
 
 typedef struct fs_wrapper_dir
 {
-    #ifdef LINUX_PLATFORM
+#ifdef LINUX_PLATFORM
     DIR *data;
-    #else
+#else
     DIR data;
-    #endif
+#endif
 } fs_wrapper_dir_t; //DIR and DIR are different for different platforms
 
 typedef struct fs_wrapper_diritem
