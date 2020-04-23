@@ -11,6 +11,22 @@ fswresult_e fs_wrapper_linux_opendir(fs_wrapper_dir_t *dir, const char *dirpath)
     return FSWRESULT_OK;
 }
 
+fswresult_e fs_wrapper_linux_readdir(fs_wrapper_dir_t *dir, fs_wrapper_diritem_t *item)
+{
+    struct dirent *di;
+    di = readdir(dir->data);
+
+    if(di == NULL)
+        return FSWRESULT_ENDOFDIR;
+
+    uint8_t i;
+    for (i=0;i<DIRITEM_NAME-1;i++)
+        item->name[i] = di->d_name[i];
+    item->name[DIRITEM_NAME-1] = '\0';
+
+    return FSWRESULT_OK;
+}
+
 fswresult_e fs_wrapper_linux_open(const char *fname)
 {
     if(file != NULL)
