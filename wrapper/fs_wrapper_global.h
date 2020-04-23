@@ -13,7 +13,8 @@
 typedef enum
 {
     FSWRESULT_OK = 0,
-    FSWRESULT_ERROR
+    FSWRESULT_ERROR,
+    FSWRESULT_ENDOFDIR
 } fswresult_e;
 
 typedef struct fs_wrapper_dir
