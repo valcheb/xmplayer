@@ -48,3 +48,11 @@ fswresult_e fs_wrapper_linux_read(void *readbuf, uint16_t size, uint16_t *bread)
 
     return FSWRESULT_OK;
 }
+
+fswresult_e fs_wrapper_linux_seek(uint16_t offset)
+{
+    if (fseek(file, offset, SEEK_SET))
+        return FSWRESULT_ERROR;
+
+    return FSWRESULT_OK;
+}
