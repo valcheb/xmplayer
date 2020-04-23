@@ -19,9 +19,7 @@ fswresult_e fs_wrapper_linux_readdir(fs_wrapper_dir_t *dir, fs_wrapper_diritem_t
     if(di == NULL)
         return FSWRESULT_ENDOFDIR;
 
-    uint8_t i;
-    for (i=0;i<DIRITEM_NAME-1;i++)
-        item->name[i] = di->d_name[i];
+    strncpy(item->name,di->d_name,DIRITEM_NAME-1);
     item->name[DIRITEM_NAME-1] = '\0';
 
     return FSWRESULT_OK;
