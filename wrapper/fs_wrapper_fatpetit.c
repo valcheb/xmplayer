@@ -33,3 +33,13 @@ fswresult_e fs_wrapper_fatpetit_readdir(fs_wrapper_dir_t *dir, fs_wrapper_dirite
 
     return FSWRESULT_OK;
 }
+
+fswresult_e fs_wrapper_linux_open(const char *fname)
+{
+    FRESULT res = pf_open(fname);
+
+    if(res != FR_OK)
+        return FSWRESULT_ERROR;
+    
+    return FSWRESULT_OK;
+}
