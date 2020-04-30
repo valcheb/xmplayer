@@ -1,6 +1,8 @@
 #ifndef FS_WRAPPER_GLOBAL_H_
 #define FS_WRAPPER_GLOBAL_H_
 
+#include <stdint.h>
+
 #define LINUX_PLATFORM // temporary define
 #define DIRITEM_NAME 13
 
