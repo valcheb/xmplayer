@@ -1,6 +1,16 @@
 #include "fs_wrapper_fatpetit.h"
 
 // TODO: debug all
+
+fs_access_t fs_access_ctx = 
+{
+    .opendir = fs_wrapper_fatpetit_opendir,
+    .readdir = fs_wrapper_fatpetit_readdir,
+    .open = fs_wrapper_fatpetit_open,
+    .read = fs_wrapper_fatpetit_read,
+    .seek = fs_wrapper_fatpetit_seek
+};
+
 fswresult_e fs_wrapper_fatpetit_opendir(fs_wrapper_dir_t *dir, const char *dirpath)
 {
     DIR pf_dir;

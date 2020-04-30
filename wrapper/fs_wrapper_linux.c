@@ -2,6 +2,15 @@
 
 static FILE *file = NULL;
 
+fs_access_t fs_access_ctx = 
+{
+    .opendir = fs_wrapper_linux_opendir,
+    .readdir = fs_wrapper_linux_readdir,
+    .open = fs_wrapper_linux_open,
+    .read = fs_wrapper_linux_read,
+    .seek = fs_wrapper_linux_seek
+};
+
 fswresult_e fs_wrapper_linux_opendir(fs_wrapper_dir_t *dir, const char *dirpath)
 {
     dir->data = opendir(dirpath);
@@ -16,7 +25,7 @@ fswresult_e fs_wrapper_linux_readdir(fs_wrapper_dir_t *dir, fs_wrapper_diritem_t
     struct dirent *di;
     di = readdir(dir->data);
 
-    if(di == NULL)
+    if (di == NULL)
         return FSWRESULT_ENDOFDIR;
 
     strncpy(item->name,di->d_name,DIRITEM_NAME-1);
@@ -27,7 +36,7 @@ fswresult_e fs_wrapper_linux_readdir(fs_wrapper_dir_t *dir, fs_wrapper_diritem_t
 
 fswresult_e fs_wrapper_linux_open(const char *fname)
 {
-    if(file != NULL)
+    if (file != NULL)
         fclose(file);
 
     file = fopen(fname, "r"); // read only for compliance with fatpetit
