@@ -48,4 +48,6 @@ typedef struct fs_access
     fs_seek_t seek;
 } fs_access_t;
 
+fs_access_t fs_access_ctx;
+
 #endif /*FS_WRAPPER_GLOBAL_H_*/
