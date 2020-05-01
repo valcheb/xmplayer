@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-#define LINUX_PLATFORM // temporary define
 #define DIRITEM_NAME 13
 
 #ifdef LINUX_PLATFORM
