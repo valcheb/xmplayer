@@ -54,9 +54,10 @@ fswresult_e fs_wrapper_fatpetit_open(const char *fname)
     return FSWRESULT_OK;
 }
 
-fswresult_e fs_wrapper_fatpetit_read(void *readbuf, uint16_t size, uint16_t *bread)
+fswresult_e fs_wrapper_fatpetit_read(void *readbuf, uint16_t size)
 {
-    FRESULT res = pf_read(readbuf, size, bread);
+    uint16_t bread;
+    FRESULT res = pf_read(readbuf, size, &bread);
 
     if (res != FR_OK)
         return FSWRESULT_ERROR;

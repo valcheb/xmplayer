@@ -46,9 +46,9 @@ fswresult_e fs_wrapper_linux_open(const char *fname)
     return FSWRESULT_OK;
 }
 
-fswresult_e fs_wrapper_linux_read(void *readbuf, uint16_t size, uint16_t *bread)
+fswresult_e fs_wrapper_linux_read(void *readbuf, uint16_t size)
 {
-    *bread = (uint16_t)fread(readbuf, 1, size, file);
+    fread(readbuf, 1, size, file);
 
     if (ferror(file))
         return FSWRESULT_ERROR;
