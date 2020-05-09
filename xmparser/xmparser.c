@@ -15,34 +15,27 @@ static xm_song_info_t song_info;
 
 xmresult_e xm_fill_main_header(xm_main_header_t *head)
 {
-    if (head == NULL)
-        return XMRESULT_ERROR;
-
-    uint16_t bread;
     if (fs_access_ctx.seek(0) != FSWRESULT_OK)
         return XMRESULT_ERROR;
     
-    fs_access_ctx.read(head->idtext,sizeof(head->idtext)/sizeof(head->idtext[0])-1,&bread);
-    head->idtext[sizeof(head->idtext)/sizeof(head->idtext[0])-1] = '\0';
+    READ_STRING(head->idtext);
+    READ_STRING(head->module_name);
+    READ_VALUE(head->sym);
+    READ_STRING(head->tracker_name);
+    READ_VALUE(head->version);
+    READ_VALUE(head->header_size);
+    READ_VALUE(head->song_len);
+    READ_VALUE(head->restart_pos);
+    READ_VALUE(head->channels_number);
+    READ_VALUE(head->patterns_number);
+    READ_VALUE(head->instruments_number);
+    READ_VALUE(head->freq_table);
+    READ_VALUE(head->default_tempo);
+    READ_VALUE(head->default_bpm);
 
-    fs_access_ctx.read(head->module_name,sizeof(head->module_name)/sizeof(head->module_name[0])-1,&bread);
-    head->module_name[sizeof(head->module_name)/sizeof(head->module_name[0])-1] = '\0';
-
-    fs_access_ctx.read(&(head->sym),sizeof(head->sym),&bread);
-
-    fs_access_ctx.read(head->tracker_name,sizeof(head->tracker_name)/sizeof(head->tracker_name[0])-1,&bread);
-    head->tracker_name[sizeof(head->tracker_name)/sizeof(head->tracker_name[0])-1] = '\0';
-
-    fs_access_ctx.read(&(head->version),sizeof(head->version),&bread);
-    fs_access_ctx.read(&(head->header_size),sizeof(head->header_size),&bread);
-    fs_access_ctx.read(&(head->song_len),sizeof(head->song_len),&bread);
-    fs_access_ctx.read(&(head->restart_pos),sizeof(head->restart_pos),&bread);
-    fs_access_ctx.read(&(head->channels_number),sizeof(head->channels_number),&bread);
-    fs_access_ctx.read(&(head->patterns_number),sizeof(head->patterns_number),&bread);
-    fs_access_ctx.read(&(head->instruments_number),sizeof(head->instruments_number),&bread);
-    fs_access_ctx.read(&(head->freq_table),sizeof(head->freq_table),&bread);
-    fs_access_ctx.read(&(head->default_tempo),sizeof(head->default_tempo),&bread);
-    fs_access_ctx.read(&(head->default_bpm),sizeof(head->default_bpm),&bread);
+    ADD_END_OF_STRING(head->idtext);
+    ADD_END_OF_STRING(head->module_name);
+    ADD_END_OF_STRING(head->tracker_name);
 
     return XMRESULT_OK;
 }
