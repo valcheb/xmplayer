@@ -7,6 +7,12 @@
 # include "fs_wrapper_fatpetit.h"
 #endif
 
+typedef enum
+{
+    XMRESULT_OK = 0,
+    XMRESULT_ERROR
+} xmresult_e;
+
 typedef struct main_header
 {
     char idtext[18];
@@ -32,5 +38,7 @@ typedef struct song_info
     uint8_t first_pattern;
     uint8_t instruments[128];
 } xm_song_info_t;
+
+
 
 #endif /*XMPARSER_H_*/
