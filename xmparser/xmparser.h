@@ -34,9 +34,9 @@ typedef struct main_header
 typedef struct song_info
 {
     xm_main_header_t *main_header;
-    uint8_t pattern_order_table;
-    uint8_t first_pattern;
-    uint8_t instruments[128];
+    uint32_t pattern_order_table;
+    uint32_t first_pattern;
+    uint32_t instruments[128];
 } xm_song_info_t;
 
 xmresult_e xm_fill_main_header(xm_main_header_t *head);
