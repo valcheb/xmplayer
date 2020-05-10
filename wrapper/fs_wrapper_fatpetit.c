@@ -65,7 +65,7 @@ fswresult_e fs_wrapper_fatpetit_read(void *readbuf, uint16_t size)
     return FSWRESULT_OK;
 }
 
-fswresult_e fs_wrapper_fatpetit_seek(uint16_t offset)
+fswresult_e fs_wrapper_fatpetit_seek(uint32_t offset)
 {
     FRESULT res = pf_lseek(offset);
 

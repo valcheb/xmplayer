@@ -36,7 +36,7 @@ typedef fswresult_e (*fs_opendir_t)(fs_wrapper_dir_t *dir, const char *dirpath);
 typedef fswresult_e (*fs_readdir_t)(fs_wrapper_dir_t *dir, fs_wrapper_diritem_t *item);
 typedef fswresult_e (*fs_open_t)(const char *fname);
 typedef fswresult_e (*fs_read_t)(void *readbuf, uint16_t size);
-typedef fswresult_e (*fs_seek_t)(uint16_t offset);
+typedef fswresult_e (*fs_seek_t)(uint32_t offset);
 
 typedef struct fs_access
 {
