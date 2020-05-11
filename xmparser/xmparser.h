@@ -39,13 +39,16 @@ typedef struct xm_pattern_header
     uint16_t data_size;
 } __attribute__((packed)) xm_pattern_header_t;
 
-typedef struct xm_instrument_header
+typedef struct xm_instrument_main_header
 {
     uint32_t instrument_size;
     char instrument_name[22];
     uint8_t instrument_type; // always 0?
     uint16_t samples_number;
-    /*extra header for samples_number > 0*/
+} __attribute__((packed)) xm_instrument_main_header_t;
+
+typedef struct xm_instrument_extra_header
+{
     uint32_t sample_header_size;
     uint8_t sample_number_for_notes[96];
     uint8_t volume_envelope_points[48];
@@ -66,6 +69,12 @@ typedef struct xm_instrument_header
     uint8_t vibrato_rate;
     uint16_t volume_fadeout;
     uint16_t reserved;
+} xm_instrument_extra_header_t;
+
+typedef struct xm_instrument_header
+{
+    xm_instrument_main_header_t main_header;
+    xm_instrument_extra_header_t extra_header;
 } xm_instrument_header_t;
 
 typedef struct xm_sample_header
