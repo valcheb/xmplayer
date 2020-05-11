@@ -67,3 +67,44 @@ xmresult_e xm_fill_song_info(xm_song_info_t *song)
 
     return XMRESULT_OK;
 }
+
+xmresult_e xm_read_instruments(xm_song_info_t *song)
+{
+    uint32_t current_offset = song->first_pattern;
+    xm_pattern_header_t pattern_header;
+    int i;
+
+    for (i = 0; i < song->main_header.patterns_number; i++) //run through all pattern headers and datas
+    {
+        xm_read_pattern_header(current_offset, &pattern_header);
+        current_offset += pattern_header.header_size + pattern_header.data_size;
+    }
+
+    for (i = 0; i < song->main_header.instruments_number; i++)
+    {
+        song->instruments[i] = current_offset;
+
+        int s;
+        xm_instrument_header_t instrument_header;
+        if (xm_read_instrument_header(song->instruments[i], &instrument_header) != XMRESULT_OK)
+            return XMRESULT_ERROR;
+
+        uint16_t samples_number = instrument_header.main_header.samples_number;
+        uint32_t samples_header_size = instrument_header.extra_header.sample_header_size;
+        uint32_t samples_len = 0;
+
+        current_offset += instrument_header.main_header.instrument_size; // move to first sample header in instrument
+        for (s = 0; s < samples_number; s++)
+        {   
+            xm_sample_header_t sample_header;
+            if (xm_read_sample_header(current_offset,&sample_header) != XMRESULT_OK)
+                return XMRESULT_ERROR;
+
+            samples_len += sample_header.sample_length;
+            current_offset += samples_header_size; // move to next sample header
+        }
+        current_offset += samples_len; // jump over all sample datas
+    }
+
+    return XMRESULT_OK;
+}
