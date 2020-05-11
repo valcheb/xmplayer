@@ -19,10 +19,10 @@ xmresult_e xm_read_main_header(xm_main_header_t *head)
     if (fs_access_ctx.seek(0) != FSWRESULT_OK)
         return XMRESULT_ERROR;
     
-    READ_STRING(head->idtext);
-    READ_STRING(head->module_name);
+    READ_VALUE(head->idtext);
+    READ_VALUE(head->module_name);
     READ_VALUE(head->sym);
-    READ_STRING(head->tracker_name);
+    READ_VALUE(head->tracker_name);
     READ_VALUE(head->version);
     READ_VALUE(head->header_size);
     READ_VALUE(head->song_len);
