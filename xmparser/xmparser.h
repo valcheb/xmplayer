@@ -15,10 +15,10 @@ typedef enum
 
 typedef struct main_header
 {
-    char idtext[18];
-    char module_name[21];
+    char idtext[17];
+    char module_name[20];
     uint8_t sym; // always 0x1a
-    char tracker_name[21];
+    char tracker_name[20];
     uint16_t version; //check this, should be 0x0104
     uint32_t header_size;
     uint16_t song_len;
@@ -42,7 +42,7 @@ typedef struct xm_pattern_header
 typedef struct xm_instrument_header
 {
     uint32_t instrument_size;
-    char instrument_name[23];
+    char instrument_name[22];
     uint8_t instrument_type; // always 0?
     uint16_t samples_number;
     /*extra header for samples_number > 0*/
@@ -79,7 +79,7 @@ typedef struct xm_sample_header
     uint8_t panning;
     int8_t relative_note_number;
     uint8_t reserved;
-    char sample_name[23];
+    char sample_name[22];
 } xm_sample_header_t;
 
 typedef struct song_info
