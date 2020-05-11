@@ -37,7 +37,7 @@ typedef struct xm_pattern_header
     uint8_t packing_type; // always 0?
     uint16_t rows_number;
     uint16_t data_size;
-} xm_pattern_header_t;
+} __attribute__((packed)) xm_pattern_header_t;
 
 typedef struct xm_instrument_header
 {
