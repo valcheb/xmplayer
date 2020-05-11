@@ -106,5 +106,6 @@ xmresult_e xm_read_instrument_header(uint32_t offset, xm_instrument_header_t *ih
 xmresult_e xm_read_sample_header(uint32_t offset, xm_sample_header_t *shead);
 xmresult_e xm_fill_song_info(xm_song_info_t *song);
 xmresult_e xm_read_instruments(xm_song_info_t *song);
+xmresult_e xm_init_song(char *song_name, xm_song_info_t *song_info);
 
 #endif /*XMPARSER_H_*/

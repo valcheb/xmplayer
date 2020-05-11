@@ -108,3 +108,13 @@ xmresult_e xm_read_instruments(xm_song_info_t *song)
 
     return XMRESULT_OK;
 }
+
+xmresult_e xm_init_song(char *song_name, xm_song_info_t *song_info)
+{
+    if (fs_access_ctx.open(song_name) != FSWRESULT_OK)
+        return XMRESULT_ERROR;
+    if (xm_fill_song_info(song_info) != XMRESULT_OK)
+        return XMRESULT_ERROR;
+
+    return XMRESULT_OK;
+}
