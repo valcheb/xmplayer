@@ -68,6 +68,20 @@ typedef struct xm_instrument_header
     uint16_t reserved;
 } xm_instrument_header_t;
 
+typedef struct xm_sample_header
+{
+    uint32_t sample_length;
+    uint32_t loop_start;
+    uint32_t loop_length;
+    uint8_t volume;
+    int8_t finetune;
+    uint8_t loop_type;
+    uint8_t panning;
+    int8_t relative_note_number;
+    uint8_t reserved;
+    char sample_name[23];
+} xm_sample_header_t;
+
 typedef struct song_info
 {
     xm_main_header_t main_header;
