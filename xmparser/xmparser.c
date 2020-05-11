@@ -28,3 +28,15 @@ xmresult_e xm_read_pattern_header(uint32_t offset, xm_pattern_header_t *phead)
 
     return XMRESULT_OK;
 }
+
+xmresult_e xm_read_instrument_header(uint32_t offset, xm_instrument_header_t *ihead)
+{
+    if (fs_access_ctx.seek(offset) != FSWRESULT_OK)
+        return XMRESULT_ERROR;
+    
+    READ_VALUE(ihead->main_header);
+    if (ihead->main_header.samples_number > 0)
+        READ_VALUE(ihead->extra_header);
+    
+    return XMRESULT_OK;
+}
