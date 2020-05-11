@@ -8,11 +8,6 @@ static xm_song_info_t song_info;
     if (fs_access_ctx.read(&(value), sizeof((value))) != FSWRESULT_OK)\
         return XMRESULT_ERROR;\
 } while(0);
-#define READ_STRING(string) do {\
-    if (fs_access_ctx.read((string), SIZE_OF_ARRAY((string))-1) != FSWRESULT_OK)\
-        return XMRESULT_ERROR;\
-    ADD_END_OF_STRING((string));\
-} while(0);
 
 xmresult_e xm_read_main_header(xm_main_header_t *head)
 {
