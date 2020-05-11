@@ -19,20 +19,7 @@ xmresult_e xm_read_main_header(xm_main_header_t *head)
     if (fs_access_ctx.seek(0) != FSWRESULT_OK)
         return XMRESULT_ERROR;
     
-    READ_VALUE(head->idtext);
-    READ_VALUE(head->module_name);
-    READ_VALUE(head->sym);
-    READ_VALUE(head->tracker_name);
-    READ_VALUE(head->version);
-    READ_VALUE(head->header_size);
-    READ_VALUE(head->song_len);
-    READ_VALUE(head->restart_pos);
-    READ_VALUE(head->channels_number);
-    READ_VALUE(head->patterns_number);
-    READ_VALUE(head->instruments_number);
-    READ_VALUE(head->freq_table);
-    READ_VALUE(head->default_tempo);
-    READ_VALUE(head->default_bpm);
+    READ_VALUE(*(head));
 
     return XMRESULT_OK;
 }
@@ -43,6 +30,6 @@ xmresult_e xm_read_pattern_header(uint32_t offset, xm_pattern_header_t *phead)
         return XMRESULT_ERROR;
 
     READ_VALUE(*(phead));
-    
+
     return XMRESULT_OK;
 }
