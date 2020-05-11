@@ -2,6 +2,9 @@
 
 static xm_song_info_t song_info;
 
+#define XM_MAIN_HEADER_OFFSET         0
+#define XM_REST_OF_MAIN_HEADER_OFFSET 60
+#define XM_PATTERN_ORDER_TABLE_OFFSET 80
 #define SIZE_OF_ARRAY(arr) sizeof((arr))/sizeof((arr)[0])
 #define ADD_END_OF_STRING(string) (string)[SIZE_OF_ARRAY((string))-1] = '\0'
 #define READ_VALUE(value) do {\
@@ -47,6 +50,20 @@ xmresult_e xm_read_sample_header(uint32_t offset, xm_sample_header_t *shead)
         return XMRESULT_ERROR;
 
     READ_VALUE(*(shead));
+
+    return XMRESULT_OK;
+}
+
+xmresult_e xm_fill_song_info(xm_song_info_t *song)
+{
+    if (xm_read_main_header(&(song->main_header)) != XMRESULT_OK)
+        return XMRESULT_ERROR;
+
+    song->pattern_order_table = XM_PATTERN_ORDER_TABLE_OFFSET;
+    song->pattern_order_table_size = song->main_header.header_size - XM_PATTERN_ORDER_TABLE_OFFSET;
+    song->first_pattern = XM_REST_OF_MAIN_HEADER_OFFSET+song->main_header.header_size;
+    if (xm_read_instruments(song) != XMRESULT_OK)
+        return XMRESULT_ERROR;
 
     return XMRESULT_OK;
 }
