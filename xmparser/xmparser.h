@@ -39,6 +39,35 @@ typedef struct xm_pattern_header
     uint16_t data_size;
 } xm_pattern_header_t;
 
+typedef struct xm_instrument_header
+{
+    uint32_t instrument_size;
+    char instrument_name[23];
+    uint8_t instrument_type; // always 0?
+    uint16_t samples_number;
+    /*extra header for samples_number > 0*/
+    uint32_t sample_header_size;
+    uint8_t sample_number_for_notes[96];
+    uint8_t volume_envelope_points[48];
+    uint8_t panning_envelope_points[48];
+    uint8_t volume_points_number;
+    uint8_t panning_points_number;
+    uint8_t volume_sustain_point;
+    uint8_t volume_loop_start_point;
+    uint8_t volume_loop_end_point;
+    uint8_t panning_sustain_point;
+    uint8_t panning_loop_start_point;
+    uint8_t panning_loop_end_point;
+    uint8_t volume_type; // bit 0: On; 1: Sustain; 2: Loop
+    uint8_t panning_type; // bit 0: On; 1: Sustain; 2: Loop
+    uint8_t vibrato_type;
+    uint8_t vibrato_sweep;
+    uint8_t vibrato_depth;
+    uint8_t vibrato_rate;
+    uint16_t volume_fadeout;
+    uint16_t reserved;
+} xm_instrument_header_t;
+
 typedef struct song_info
 {
     xm_main_header_t main_header;
