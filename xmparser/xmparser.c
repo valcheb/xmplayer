@@ -14,7 +14,7 @@ static xm_song_info_t song_info;
     ADD_END_OF_STRING((string));\
 } while(0);
 
-xmresult_e xm_fill_main_header(xm_main_header_t *head)
+xmresult_e xm_read_main_header(xm_main_header_t *head)
 {
     if (fs_access_ctx.seek(0) != FSWRESULT_OK)
         return XMRESULT_ERROR;

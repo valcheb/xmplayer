@@ -40,6 +40,6 @@ typedef struct song_info
     uint32_t instruments[128];
 } xm_song_info_t;
 
-xmresult_e xm_fill_main_header(xm_main_header_t *head);
+xmresult_e xm_read_main_header(xm_main_header_t *head);
 
 #endif /*XMPARSER_H_*/
