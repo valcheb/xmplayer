@@ -31,6 +31,14 @@ typedef struct main_header
     uint16_t default_bpm;
 } xm_main_header_t;
 
+typedef struct xm_pattern_header
+{
+    uint32_t header_size;
+    uint8_t packing_type; // always 0?
+    uint16_t rows_number;
+    uint16_t data_size;
+} xm_pattern_header_t;
+
 typedef struct song_info
 {
     xm_main_header_t main_header;
