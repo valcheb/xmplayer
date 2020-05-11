@@ -42,10 +42,7 @@ xmresult_e xm_read_pattern_header(uint32_t offset, xm_pattern_header_t *phead)
     if (fs_access_ctx.seek(offset) != FSWRESULT_OK)
         return XMRESULT_ERROR;
 
-    READ_VALUE(phead->header_size);
-    READ_VALUE(phead->packing_type);
-    READ_VALUE(phead->rows_number);
-    READ_VALUE(phead->data_size);
-
+    READ_VALUE(*(phead));
+    
     return XMRESULT_OK;
 }
