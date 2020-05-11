@@ -92,5 +92,6 @@ typedef struct song_info
 } xm_song_info_t;
 
 xmresult_e xm_read_main_header(xm_main_header_t *head);
+xmresult_e xm_read_pattern_header(uint32_t offset, xm_pattern_header_t *phead)
 
 #endif /*XMPARSER_H_*/
