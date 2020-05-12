@@ -62,46 +62,44 @@ xmresult_e xm_read_song_info(xm_song_info_t *song)
     song->pattern_order_table = XM_PATTERN_ORDER_TABLE_OFFSET;
     song->pattern_order_table_size = song->main_header.header_size - XM_PATTERN_ORDER_TABLE_OFFSET;
     song->first_pattern = XM_REST_OF_MAIN_HEADER_OFFSET + song->main_header.header_size;
-    if (xm_read_instruments(song) != XMRESULT_OK)
+
+    uint32_t current_offset = song->first_pattern;
+    xm_pattern_header_t pattern_header;
+    for (int i = 0; i < song->main_header.patterns_number; i++) //run through all pattern headers and datas
+    {
+        if (xm_read_pattern_header(current_offset, &pattern_header) != XMRESULT_OK)
+            return XMRESULT_ERROR;
+        current_offset += pattern_header.header_size + pattern_header.data_size;
+    }
+
+    if (xm_read_instruments(current_offset, song->instruments, song->main_header.instruments_number) != XMRESULT_OK)
         return XMRESULT_ERROR;
 
     return XMRESULT_OK;
 }
 
-xmresult_e xm_read_instruments(xm_song_info_t *song)
+xmresult_e xm_read_instruments(uint32_t offset, uint32_t *instruments, uint16_t instrument_number)
 {
-    uint32_t current_offset = song->first_pattern;
-    xm_pattern_header_t pattern_header;
-
-    for (int i = 0; i < song->main_header.patterns_number; i++) //run through all pattern headers and datas
+    for (int i = 0; i < instrument_number; i++)
     {
-        xm_read_pattern_header(current_offset, &pattern_header);
-        current_offset += pattern_header.header_size + pattern_header.data_size;
-    }
-
-    for (int i = 0; i < song->main_header.instruments_number; i++)
-    {
-        song->instruments[i] = current_offset;
+        instruments[i] = offset;
 
         xm_instrument_header_t instrument_header;
-        if (xm_read_instrument_header(song->instruments[i], &instrument_header) != XMRESULT_OK)
+        if (xm_read_instrument_header(instruments[i], &instrument_header) != XMRESULT_OK)
             return XMRESULT_ERROR;
 
-        uint16_t samples_number = instrument_header.main_header.samples_number;
-        uint32_t samples_header_size = instrument_header.extra_header.sample_header_size;
         uint32_t samples_len = 0;
-
-        current_offset += instrument_header.main_header.instrument_size; // move to first sample header in instrument
-        for (int s = 0; s < samples_number; s++)
+        offset += instrument_header.main_header.instrument_size; // move to first sample header in instrument
+        for (int s = 0; s < instrument_header.main_header.samples_number; s++)
         {   
             xm_sample_header_t sample_header;
-            if (xm_read_sample_header(current_offset, &sample_header) != XMRESULT_OK)
+            if (xm_read_sample_header(offset, &sample_header) != XMRESULT_OK)
                 return XMRESULT_ERROR;
 
             samples_len += sample_header.sample_length;
-            current_offset += samples_header_size; // move to next sample header
+            offset += instrument_header.extra_header.sample_header_size; // move to next sample header
         }
-        current_offset += samples_len; // jump over all sample datas
+        offset += samples_len; // jump over all sample datas
     }
 
     return XMRESULT_OK;
