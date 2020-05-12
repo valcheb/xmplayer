@@ -54,7 +54,7 @@ xmresult_e xm_read_sample_header(uint32_t offset, xm_sample_header_t *shead)
     return XMRESULT_OK;
 }
 
-xmresult_e xm_fill_song_info(xm_song_info_t *song)
+xmresult_e xm_read_song_info(xm_song_info_t *song)
 {
     if (xm_read_main_header(&song->main_header) != XMRESULT_OK)
         return XMRESULT_ERROR;
@@ -111,7 +111,7 @@ xmresult_e xm_init_song(char *song_name, xm_song_info_t *song_info)
 {
     if (fs_access_ctx.open(song_name) != FSWRESULT_OK)
         return XMRESULT_ERROR;
-    if (xm_fill_song_info(song_info) != XMRESULT_OK)
+    if (xm_read_song_info(song_info) != XMRESULT_OK)
         return XMRESULT_ERROR;
 
     return XMRESULT_OK;

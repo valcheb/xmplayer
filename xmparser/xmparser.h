@@ -104,7 +104,7 @@ xmresult_e xm_read_main_header(xm_main_header_t *head);
 xmresult_e xm_read_pattern_header(uint32_t offset, xm_pattern_header_t *phead);
 xmresult_e xm_read_instrument_header(uint32_t offset, xm_instrument_header_t *ihead);
 xmresult_e xm_read_sample_header(uint32_t offset, xm_sample_header_t *shead);
-xmresult_e xm_fill_song_info(xm_song_info_t *song);
+xmresult_e xm_read_song_info(xm_song_info_t *song);
 xmresult_e xm_read_instruments(xm_song_info_t *song);
 xmresult_e xm_init_song(char *song_name, xm_song_info_t *song_info);
 
