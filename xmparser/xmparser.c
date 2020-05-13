@@ -63,14 +63,9 @@ xmresult_e xm_read_song_info(xm_song_info_t *song)
     song->pattern_order_table_size = song->main_header.header_size - XM_PATTERN_ORDER_TABLE_OFFSET;
     song->first_pattern = XM_REST_OF_MAIN_HEADER_OFFSET + song->main_header.header_size;
 
-    uint32_t current_offset = song->first_pattern;
-    xm_pattern_header_t pattern_header;
-    for (int i = 0; i < song->main_header.patterns_number; i++) //run through all pattern headers and datas
-    {
-        if (xm_read_pattern_header(current_offset, &pattern_header) != XMRESULT_OK)
-            return XMRESULT_ERROR;
-        current_offset += pattern_header.header_size + pattern_header.data_size;
-    }
+    uint32_t current_offset;
+    if (xm_read_pattern_offset(song->main_header.patterns_number, song->first_pattern, &current_offset) != XMRESULT_OK)
+        return XMRESULT_ERROR;
 
     if (xm_read_instruments(current_offset, song->instruments, song->main_header.instruments_number) != XMRESULT_OK)
         return XMRESULT_ERROR;
