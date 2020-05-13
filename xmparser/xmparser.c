@@ -114,3 +114,18 @@ xmresult_e xm_init_song(char *song_name, xm_song_info_t *song_info)
 
     return XMRESULT_OK;
 }
+
+xmresult_e xm_read_pattern_offset(uint16_t index, uint32_t first_pattern, uint32_t *offset)
+{
+    *offset = first_pattern;
+
+    xm_pattern_header_t pattern_header;
+    for (int i = 0; i < index; i++)
+    {
+        if (xm_read_pattern_header(*offset, &pattern_header) != XMRESULT_OK)
+            return XMRESULT_ERROR;
+        *offset += pattern_header.header_size + pattern_header.data_size;
+    }
+
+    return XMRESULT_OK;
+}
