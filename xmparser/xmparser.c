@@ -124,3 +124,13 @@ xmresult_e xm_read_pattern_offset(uint16_t index, uint32_t first_pattern, uint32
 
     return XMRESULT_OK;
 }
+
+xmresult_e xm_read_pattern_index_in_order_table(uint32_t offset, uint8_t *index)
+{
+    if (fs_access_ctx.seek(offset) != FSWRESULT_OK)
+        return XMRESULT_ERROR;
+
+    READ_VALUE(*index);
+
+    return XMRESULT_OK;
+}

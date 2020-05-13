@@ -108,5 +108,6 @@ xmresult_e xm_read_song_info(xm_song_info_t *song);
 xmresult_e xm_read_instruments(uint32_t offset, uint32_t *instruments, uint16_t instrument_number);
 xmresult_e xm_init_song(char *song_name, xm_song_info_t *song_info);
 xmresult_e xm_read_pattern_offset(uint16_t index, uint32_t first_pattern, uint32_t *offset);
+xmresult_e xm_read_pattern_index_in_order_table(uint32_t offset, uint8_t *index);
 
 #endif /*XMPARSER_H_*/
