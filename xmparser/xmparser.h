@@ -100,6 +100,15 @@ typedef struct song_info
     uint32_t instruments[128];
 } xm_song_info_t;
 
+typedef struct note_info
+{
+    uint8_t note;
+    uint8_t instrument;
+    uint8_t volume_column_byte;
+    uint8_t effect_type;
+    uint8_t effect_parameter;
+} note_info_t;
+
 xmresult_e xm_read_main_header(xm_main_header_t *head);
 xmresult_e xm_read_pattern_header(uint32_t offset, xm_pattern_header_t *phead);
 xmresult_e xm_read_instrument_header(uint32_t offset, xm_instrument_header_t *ihead);
