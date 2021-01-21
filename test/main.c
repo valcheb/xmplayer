@@ -203,17 +203,16 @@ typedef struct
     uint32_t    bytes_in_row;
 } row_info_t;
 
+typedef note_info_t channel_state_t;
+
 typedef struct
 {
     xm_instrument_header_t instrument_header;
-    xm_sample_header_t sample_header;
-    uint32_t sample_start_offset;
-    uint8_t note;
-    uint8_t instrument_number;
-    uint8_t volume; //TODO volume some difficult at this time, so simplify to constant
-    uint8_t effect;
-    uint8_t effect_parameter;
-} channel_state_t;
+    xm_sample_header_t     sample_header;
+    uint32_t               sample_start_offset;
+    uint32_t               volume;
+    uint32_t
+} channel_info_t;
 
 static void read_new_pattern(pattern_data_t *pattern_data, uint16_t order_table_pos, xm_song_info_t *song)
 {
@@ -273,20 +272,113 @@ static void set_mute_channels(channel_state_t *channels_state, uint16_t chan_num
     for (int chan_c = 0; chan_c < chan_num; chan_c++)
     {
         channels_state[chan_c].note = 97; // key off
-        channels_state[chan_c].instrument_number = 0;
-        channels_state[chan_c].sample_start_offset = 0;
-        channels_state[chan_c].volume = 64; // max volume
-        channels_state[chan_c].effect = 0;
+        channels_state[chan_c].instrument = 0;
+        channels_state[chan_c].volume_column_byte = 64; // max volume
+        channels_state[chan_c].effect_type = 0;
         channels_state[chan_c].effect_parameter = 0;
     }
 }
 
+static void prepare_states(row_info_t *note_row, channel_state_t *current_states, xm_song_info_t *song)
+{
+    for (int chan_c = 0; chan_c < song->main_header.channels_number; chan_c++)
+    {
+        note_info_t new_note = note_row->notes[chan_c];
+        channel_state_t *current_state = &current_states[chan_c];
+
+        if (new_note.note != 0)
+        {
+            current_state->note = new_note.note;
+            //mb optimaze: if note is same - dont calc freq, but phase == 0
+        }
+
+        if (new_note.instrument == 0)
+        {
+            //nothing changes
+        }
+        else if (new_note.instrument > song->main_header.instruments_number)
+        {
+            //mute
+            current_state->note = 97;
+        }
+        else if (new_note.instrument != current_state->instrument)
+        {
+            //get new instr
+            current_state->instrument = new_note.instrument;
+        }
+
+        //TODO volume and effects state
+    }
+}
+
+static void prepare_channels(channel_state_t *current_states, channel_info_t *channels, xm_song_info_t *song)
+{
+    #if 1
+        printf("state:  ");
+        for (int chan_c = 0; chan_c < song->main_header.channels_number; chan_c++)
+        {
+            channel_state_t *current_state = &current_states[chan_c];
+            printf("|%d %d %d   |", current_state->note, current_state->instrument, current_state->volume_column_byte);
+        }
+        printf("\n");
+    #endif
+
+    for (int chan_c = 0; chan_c < song->main_header.channels_number; chan_c++)
+    {
+        channel_state_t *current_state = &current_states[chan_c];
+        channel_info_t  *channel = &channels[chan_c];
+
+        //calc start freq //start because there are effects, that change freq or volume
+        //calc start volume
+    }
+}
+
+#if 0
 static void prepare_channels(row_info_t *note_row, channel_state_t *current_states, xm_song_info_t *song)
 {
     for (int chan_c = 0; chan_c < song->main_header.channels_number; chan_c++)
     {
         note_info_t new_note = note_row->notes[chan_c];
         channel_state_t *current_state = &current_states[chan_c];
+
+/*
+        if (is_new_note)
+        {
+            if (is_incorrect_instr)
+            {
+                mute;
+            }
+
+            calc freq;
+        }
+
+        if (is_new_instrument)
+        {
+            get new instument
+        }
+*/
+
+        if (new_note.instrument < 1 || new_note.instrument > song->main_header.instruments_number)
+        {
+            if (new_note.note != current_state->note)
+            {
+                //current_state->note = 97; //duct tape: if you see an incorrect instrument just stop playing
+            }
+        }
+        else
+        {
+            // 0 and 97
+            if (new_note.instrument != current_state->instrument_number)
+            {
+                //read_new_instr
+            }
+
+            if (new_note.note != current_state->note)
+            {
+                //calc_freq
+            }
+        }
+
 
         if (new_note.note != 0 && new_note.note != current_state->note) //new note coming
         {
@@ -308,9 +400,9 @@ static void prepare_channels(row_info_t *note_row, channel_state_t *current_stat
                     #if 1
                         printf("        ");
                         printf("Name of instr%d = %.*s, offset = %d, size = %d ", new_note.instrument,
-                            (int)(sizeof(current_state->instrument_header.main_header.instrument_name)/sizeof(current_state->instrument_header.main_header.instrument_name[0])),
-                            current_state->instrument_header.main_header.instrument_name,
-                            song->instruments[new_note.instrument - 1], current_state->instrument_header.main_header.instrument_size);
+                            (int)(sizeof(instr_main_header->instrument_name)/sizeof(instr_main_header->instrument_name[0])),
+                            instr_main_header->instrument_name,
+                            song->instruments[new_note.instrument - 1], instr_main_header->instrument_size);
                         printf("\n");
                     #endif
 
@@ -326,7 +418,9 @@ static void prepare_channels(row_info_t *note_row, channel_state_t *current_stat
 
                     #if 1
                         printf("        ");
-                        printf("Sample number = %d", sample_number_for_note);
+                        printf("Sample number = %d ", sample_number_for_note);
+                        printf("sample name = %.*s", (int)(sizeof(current_state->sample_header.sample_name)/sizeof(current_state->sample_header.sample_name[0])),
+                            current_state->sample_header.sample_name);
                         printf("\n");
                     #endif
                 }
@@ -337,6 +431,7 @@ static void prepare_channels(row_info_t *note_row, channel_state_t *current_stat
         }
     }
 }
+#endif
 
 static void row_process(row_info_t *current_note_row, row_info_t *old_note_row, uint16_t chan_num)
 {
@@ -394,6 +489,7 @@ static void test_play(xm_song_info_t *song)
     uint16_t order_table_pos = 0;
     uint16_t chan_num = song->main_header.channels_number;
     row_info_t new_row;
+    channel_info_t channels[chan_num];
     channel_state_t channels_states[chan_num];
     set_mute_channels(channels_states, chan_num); //set default volume, key off
 
