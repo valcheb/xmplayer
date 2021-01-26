@@ -211,7 +211,7 @@ typedef struct
     xm_sample_header_t     sample_header;
     uint32_t               sample_start_offset;
     uint32_t               volume;
-    uint32_t
+    uint32_t               frequency;
 } channel_info_t;
 
 static void read_new_pattern(pattern_data_t *pattern_data, uint16_t order_table_pos, xm_song_info_t *song)
@@ -311,6 +311,49 @@ static void prepare_states(row_info_t *note_row, channel_state_t *current_states
     }
 }
 
+static uint32_t calculate_frequency()
+{
+
+}
+
+static void prepare_instrument_and_sample(channel_state_t *current_state, channel_info_t *channel, xm_song_info_t *song)
+{
+    //read instrument
+    uint32_t instrument_offset = song->instruments[current_state->instrument - 1];
+    xm_read_instrument_header(instrument_offset, &channel->instrument_header);
+
+    xm_instrument_main_header_t *instr_main_header = &channel->instrument_header.main_header;
+    xm_instrument_extra_header_t *instr_extra_header = &channel->instrument_header.extra_header;
+
+    #if 1
+        printf("        ");
+        printf("Name of instr%d = %.*s, offset = %d, size = %d ", current_state->instrument,
+            (int)(sizeof(instr_main_header->instrument_name) / sizeof(instr_main_header->instrument_name[0])),
+            instr_main_header->instrument_name,
+            song->instruments[current_state->instrument - 1], instr_main_header->instrument_size);
+        printf("\n");
+    #endif
+
+    //read sample
+    uint8_t sample_number_for_note = instr_extra_header->sample_number_for_notes[current_state->note];
+    channel->sample_start_offset = instrument_offset + instr_main_header->instrument_size; //here sample headers start
+
+    for (int sample_c = 0; sample_c <= sample_number_for_note; sample_c++)
+    {
+        xm_read_sample_header(channel->sample_start_offset, &channel->sample_header);
+        channel->sample_start_offset += instr_extra_header->sample_header_size; // move to next sample header
+    }
+    //TODO debug this for instruments with more than one sample
+
+    #if 1
+        printf("        ");
+        printf("Sample number = %d ", sample_number_for_note);
+        printf("sample name = %.*s", (int)(sizeof(channel->sample_header.sample_name) / sizeof(channel->sample_header.sample_name[0])),
+               channel->sample_header.sample_name);
+        printf("\n");
+    #endif
+}
+
 static void prepare_channels(channel_state_t *current_states, channel_info_t *channels, xm_song_info_t *song)
 {
     #if 1
@@ -328,110 +371,79 @@ static void prepare_channels(channel_state_t *current_states, channel_info_t *ch
         channel_state_t *current_state = &current_states[chan_c];
         channel_info_t  *channel = &channels[chan_c];
 
-        //calc start freq //start because there are effects, that change freq or volume
-        //calc start volume
-    }
-}
-
-#if 0
-static void prepare_channels(row_info_t *note_row, channel_state_t *current_states, xm_song_info_t *song)
-{
-    for (int chan_c = 0; chan_c < song->main_header.channels_number; chan_c++)
-    {
-        note_info_t new_note = note_row->notes[chan_c];
-        channel_state_t *current_state = &current_states[chan_c];
-
-/*
-        if (is_new_note)
+        if (current_state->instrument > 0)
         {
-            if (is_incorrect_instr)
-            {
-                mute;
-            }
-
-            calc freq;
-        }
-
-        if (is_new_instrument)
-        {
-            get new instument
-        }
-*/
-
-        if (new_note.instrument < 1 || new_note.instrument > song->main_header.instruments_number)
-        {
-            if (new_note.note != current_state->note)
-            {
-                //current_state->note = 97; //duct tape: if you see an incorrect instrument just stop playing
-            }
+            prepare_instrument_and_sample(current_state, channel, song);
         }
         else
         {
-            // 0 and 97
-            if (new_note.instrument != current_state->instrument_number)
-            {
-                //read_new_instr
-            }
-
-            if (new_note.note != current_state->note)
-            {
-                //calc_freq
-            }
+            //TODO what to do with 0 instrument?
         }
 
+        //uint16_t note = current_state->note + channel->sample_header.relative_note_number;
+        //float period = 7680 - (note * 64) - (channel->sample_header.finetune / 2);
+        //channel->frequency = 8363 * 2^((4608 - period) / 768);
 
-        if (new_note.note != 0 && new_note.note != current_state->note) //new note coming
-        {
-            if (new_note.note == 97 || new_note.instrument < 1 || new_note.instrument > song->main_header.instruments_number)
-            {
-                current_state->note = 97; //duct tape: if you see an incorrect instrument just stop playing
-            }
-            else
-            {
-                if (new_note.instrument != current_state->instrument_number) //new instrument
-                {
-                    //get_instrument
-                    uint32_t instrument_offset = song->instruments[new_note.instrument - 1];
-                    xm_read_instrument_header(instrument_offset, &current_state->instrument_header);
-                    current_state->instrument_number = new_note.instrument;
-                    xm_instrument_main_header_t *instr_main_header = &current_state->instrument_header.main_header;
-                    xm_instrument_extra_header_t *instr_extra_header = &current_state->instrument_header.extra_header;
+        //calc start freq //start because there are effects, that change freq or volume
+        /*
+            PatternNote ranges in 1..96
+            1   = C-0
+            96  = B-7
+            97  = Key Off (special 'note')
 
-                    #if 1
-                        printf("        ");
-                        printf("Name of instr%d = %.*s, offset = %d, size = %d ", new_note.instrument,
-                            (int)(sizeof(instr_main_header->instrument_name)/sizeof(instr_main_header->instrument_name[0])),
-                            instr_main_header->instrument_name,
-                            song->instruments[new_note.instrument - 1], instr_main_header->instrument_size);
-                        printf("\n");
-                    #endif
+            FineTune ranges between -128..+127
+            -128 = -1 halftone,
+            +127 = +127/128 halftones
 
-                    //get_sample
-                    uint8_t sample_number_for_note = instr_extra_header->sample_number_for_notes[new_note.note];
-                    current_state->sample_start_offset = instrument_offset + instr_main_header->instrument_size; //here sample headers start
+            RelativeTone is then in range -96..95, so in
+            effect a note with RelativeTone value 0 is the
+            note itself.
 
-                    for (int sample_c = 0; sample_c <= sample_number_for_note; sample_c++)
-                    {
-                        xm_read_sample_header(current_state->sample_start_offset, &current_state->sample_header);
-                        current_state->sample_start_offset += instr_extra_header->sample_header_size; // move to next sample header
-                    }
+            Formula for calculating the real, final note value is:
 
-                    #if 1
-                        printf("        ");
-                        printf("Sample number = %d ", sample_number_for_note);
-                        printf("sample name = %.*s", (int)(sizeof(current_state->sample_header.sample_name)/sizeof(current_state->sample_header.sample_name[0])),
-                            current_state->sample_header.sample_name);
-                        printf("\n");
-                    #endif
-                }
-                current_state->note = new_note.note;
-                //get_freq
-                //save new state
-            }
-        }
+            >> RealNote = PatternNote + RelativeTone;
+
+            Linear frequency table
+            ======================
+
+            > Period = 7680 - (Note * 64) - (FineTune / 2)
+            > Frequency = 8363 * 2^((4608 - Period) / 768)
+
+            NOTICE: The values are reasonable. With note 119
+                and finetune of +128, we get:
+
+                > x = 7680 - (119*64) - (128/2)
+                > x = 64 - 64
+                > x = 0
+        */
+
+        //calc start volume
+        /*
+            The volume formula
+            ==================
+
+            FinalVol = (FadeOutVol/65536)*(EnvelopeVol/64)*(GlobalVol/64)*(Vol/64)*Scale;
+
+            The panning formula
+            ===================
+
+            FinalPan = Pan + ( (EnvelopePan-32)*(128-Abs(Pan-128)) / 32 );
+
+            NOTICE: The panning envelope values range
+                    from 0...64, not -128...+127
+
+
+            Fadeout
+            =======
+            The FadeOutVol is originally 65536 (after the note has been triggered) and
+            is decremented by "Instrument.Fadeout" each tick after note is released
+            (with KeyOff Effect or with KeyOff Note)
+
+            NOTICE: Fadeout is not processed if Volume Envelope is DISABLED.
+            (This means that the FadeOutVol stays at 65536)
+        */
     }
 }
-#endif
 
 static void row_process(row_info_t *current_note_row, row_info_t *old_note_row, uint16_t chan_num)
 {
@@ -495,7 +507,7 @@ static void test_play(xm_song_info_t *song)
 
     while (order_table_pos < song->main_header.song_len)
     {
-        read_new_pattern(&current_pattern, order_table_pos, song);
+        if (order_table_pos == 41){read_new_pattern(&current_pattern, order_table_pos, song);
 
         uint16_t row_counter      = 0;
         uint32_t row_pos          = 0;
@@ -506,11 +518,12 @@ static void test_play(xm_song_info_t *song)
         {
             clear_row(&new_row, chan_num);
             read_new_row(&new_row, start_row_offset + row_pos, chan_num);
-            prepare_channels(&new_row, channels_states, song);
+            prepare_states(&new_row, channels_states, song);
+            prepare_channels(channels_states, channels, song);
 
             row_counter++;
             row_pos += new_row.bytes_in_row;
-        }
+        }}
 
         order_table_pos++;
     }
